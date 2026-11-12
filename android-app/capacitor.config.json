@@ -1,0 +1,15 @@
+{
+  "appId": "sy.daraa.olympiad.math",
+  "appName": "منصة تدريب",
+  "webDir": "www",
+  "server": {
+    "url": "https://osama-salkhdi.github.io/olympiad-math/",
+    "cleartext": false,
+    "errorPath": "offline.html",
+    "allowNavigation": ["osama-salkhdi.github.io"]
+  },
+  "android": { "backgroundColor": "#214539" },
+  "plugins": {
+    "StatusBar": { "backgroundColor": "#214539", "style": "DARK", "overlaysWebView": false }
+  }
+}

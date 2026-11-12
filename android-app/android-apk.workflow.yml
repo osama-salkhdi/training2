@@ -1,0 +1,47 @@
+name: Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['android-app/**']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Install dependencies
+        run: npm install
+      - name: Add Android platform
+        run: npx cap add android
+      - name: Generate icons and splash
+        run: npx capacitor-assets generate --android
+      - name: Sync
+        run: npx cap sync android
+      - name: Build debug APK
+        working-directory: android-app/android
+        run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/olympiad-math.apk"
+      - name: Publish to release (fixed link)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-latest
+          name: تطبيق أندرويد (أحدث نسخة)
+          body: حمّل الملف olympiad-math.apk وثبّته. التطبيق يفتح الموقع الحي، فالتحديثات تصل تلقائياً دون إعادة تثبيت.
+          files: olympiad-math.apk
+          make_latest: true
