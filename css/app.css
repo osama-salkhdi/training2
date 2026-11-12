@@ -374,3 +374,26 @@ body.mobile .stgrid{grid-template-columns:1fr}body.mobile .axgrid{grid-template-
 .matview.nodl,.matview.nodl *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .matview.nodl canvas{pointer-events:none}
 @media print{body.noscroll>*{display:none!important}}
+
+.brand b{font-size:17px;line-height:1.35}
+.brand img,.login .lg img{background:#fff9f3;border-radius:12px;padding:3px;object-fit:contain}
+.hero .hlogo img{width:100%;height:100%}.hero .hlogo{margin-bottom:10px}
+
+/* v4: صورة الواجهة تظهر كاملة شريطاً أعلى الترويسة على الشاشات الضيقة */
+.hero .hstrip{display:none}
+@media (max-width:1100px){.hero.hasimg{padding:0 16px 20px;background:var(--card);border:1px solid var(--line);min-height:0}.hero.hasimg .bgimg,.hero.hasimg .veil{display:none}.hero.hasimg .hstrip{display:block;align-self:stretch;width:calc(100% + 32px);max-width:none;height:auto;margin:0 -16px 12px;position:relative}}
+body.mobile .hero.hasimg{padding:0 16px 20px;background:var(--card);border:1px solid var(--line);min-height:0}body.mobile .hero.hasimg .bgimg,.hero.hasimg .veil{display:none}body.mobile .hero.hasimg .hstrip{display:block;align-self:stretch;width:calc(100% + 32px);max-width:none;height:auto;margin:0 -16px 12px;position:relative}
+
+/* v4: صورة الواجهة على الهاتف واللوحي تظهر شريطاً كاملاً أعلى الترويسة، لا خلفيةً مقصوصة */
+@media (max-width:1100px){.hero.hasimg{padding:0 16px 20px!important;background:var(--card)!important;border:1px solid var(--line);min-height:0!important}
+.hero.hasimg .bgimg,.hero.hasimg .veil{display:none!important}
+.hero.hasimg .hstrip{display:block!important;align-self:stretch;width:calc(100% + 32px)!important;max-width:none!important;height:auto!important;margin:0 -16px 12px!important;position:relative}}
+body.mobile .hero.hasimg{padding:0 16px 20px!important;background:var(--card)!important;min-height:0!important}
+body.mobile .hero.hasimg .bgimg,body.mobile .hero.hasimg .veil{display:none!important}
+body.mobile .hero.hasimg .hstrip{display:block!important;align-self:stretch;width:calc(100% + 32px)!important;max-width:none!important;height:auto!important;margin:0 -16px 12px!important;position:relative}
+@media (min-width:1101px){body:not(.mobile) .hero.hasimg{background:#f3e9de}
+body:not(.mobile) .hero.hasimg .bgimg{background-size:100% auto;background-position:center bottom;background-repeat:no-repeat;-webkit-mask-image:linear-gradient(to top,#000 0,#000 40%,transparent 64%);mask-image:linear-gradient(to top,#000 0,#000 40%,transparent 64%)}}
+/* v4: صورة الواجهة تظهر كاملةً دائماً شريطاً أعلى الترويسة على كل الشاشات (حاسوب، هاتف، وضع سطح المكتب في الهاتف) */
+.hero.hasimg{padding:0 16px 22px!important;background:var(--card)!important;border:1px solid var(--line);min-height:0!important}
+.hero.hasimg .bgimg,.hero.hasimg .veil{display:none!important}
+.hero.hasimg .hstrip{display:block!important;align-self:stretch;width:calc(100% + 32px)!important;max-width:none!important;height:auto!important;margin:0 -16px 14px!important;position:relative}

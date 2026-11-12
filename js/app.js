@@ -56,7 +56,7 @@ book:'<path d="M12 6c-2-1.6-5-2-8-1.5v13c3-.5 6-.1 8 1.5 2-1.6 5-2 8-1.5v-13c-3-
 geo:'<path d="M4 19h16L7 5z"/><circle cx="15.5" cy="9" r="3.2"/>',alg:'<path d="M5 6l5 6-5 6"/><path d="M13 8h6M13 16h6M16 5v6"/>',comb:'<circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="7" r="2.5"/><circle cx="7" cy="17" r="2.5"/><circle cx="17" cy="17" r="2.5"/><path d="M9.5 7h5M7 9.5v5M9 9l6 6"/>',nt:'<path d="M9 4L7 20M17 4l-2 16M4 9h17M3 15h17"/>',eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'};
 const ic=(n,cls='')=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]||''}</svg>`;
 const DEFAULT_LOGO=`<svg viewBox="0 0 100 100"><defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9b46a"/><stop offset="1" stop-color="#a87a2e"/></linearGradient></defs><g fill="none" stroke="url(#lgG)" stroke-width="5" stroke-linecap="round"><path d="M50 8v10M50 82v10M8 50h10M82 50h10M20 20l7 7M73 73l7 7M80 20l-7 7M27 73l-7 7"/><circle cx="50" cy="50" r="28"/></g><path d="M50 30l6 14 15 1-11 10 4 15-14-8-14 8 4-15-11-10 15-1z" fill="url(#lgG)"/></svg>`;
-const logoHTML=()=>S.settings.logo?`<img src="${S.settings.logo}" alt="">`:DEFAULT_LOGO;
+const logoHTML=()=>`<img src="${S.settings.logo||'icons/logo.png'}" alt="">`;
 const PALETTES=[['#214539','#2d5c4b'],['#123f3e','#1b6b67'],['#16324f','#2563a8'],['#33264f','#6b4bb0'],['#4a2338','#a8436e'],['#333d1f','#6b7f2e'],['#4a3517','#a87a2e'],['#2b3035','#55606b']];
 const TASK_TYPES=['وظيفة مسائل','ورقة عمل','بحث','تقرير','مراجعة','أخرى'];
 const DEV_NAME='المهندس أسامة ياسر الصلخدي';
@@ -82,7 +82,7 @@ const VIEWS={},UI={};
 const PREFS=(()=>{try{return JSON.parse(localStorage.getItem('olymp-prefs')||'{}')}catch(e){return{}}})();
 const savePrefs=()=>{try{localStorage.setItem('olymp-prefs',JSON.stringify(PREFS))}catch(e){}};
 
-function defaultSettings(){return{name:'منصة تدريب',subtitle:'',spec:'الرياضيات',logo:'',hero:'',palette:0,theme:'light',startDate:'2026-09-01',years:1}}
+function defaultSettings(){return{name:'مكتب الأولمبياد العلمي السوري بدرعا',subtitle:'',spec:'الرياضيات',logo:'',hero:'',palette:0,theme:'light',startDate:'2026-09-01',years:1}}
 const ARRAYS=['users','students','tasks','subs','sessions','notes','activity','surveys','responses','participation','exams','attempts','notifications','reads','stages','materials','unlocks','creds'];
 function seedStages(spec){return STAGE_NAMES.map((name,i)=>({id:String(i+1),name,desc:'',open:i===0,restrict:false,allowed:[],sections:defSections(spec||SPECS[0])}))}
 function blankState(withAdmin){const st={settings:defaultSettings(),stages:seedStages(),stagePw:{}};ARRAYS.forEach(k=>{if(!st[k])st[k]=[]});
@@ -253,7 +253,7 @@ function render(){if(S){S.tracks=S.tracks||[];S.history=S.history||[]}
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(run);else run();
 }
 function hero(title,sub,chips,search=true){
-  return `<section class="hero">${S.settings.hero?`<div class="bgimg" style="background-image:url(${S.settings.hero})"></div>`:'<div class="pat"></div>'}<div class="veil"></div>
+  return `<section class="hero ${S.settings.hero?'hasimg':''}">${S.settings.hero?`<div class="bgimg" style="background-image:url(${S.settings.hero})"></div><img class="hstrip" src="${(S.settings.heroM&&(document.body.classList.contains('mobile')||innerWidth<=1100))?S.settings.heroM:S.settings.hero}" alt="">`:'<div class="pat"></div>'}<div class="veil"></div>
   <div class="hlogo">${logoHTML()}</div><h1>${esc(title)}</h1><div class="sub">${esc(sub)}</div>
   ${search?`<div class="hsearch noprint"><input id="gsearch" placeholder="ابحث عن طالب، جلسة، وظيفة، استبيان…" autocomplete="off"><span class="sbtn">${ic('search')}</span><div class="sres" id="sres"></div></div>`:''}
   ${chips?`<div class="chips">${chips}</div>`:''}</section>`}
@@ -527,7 +527,8 @@ VIEWS.settings=()=>{if(!isDev())return '';const s=S.settings;const demoData=S.st
    <label class="full">اسم المنصة<input name="name" value="${esc(s.name)}" required></label>
    <label class="full">العنوان الفرعي<input name="subtitle" value="${esc(s.subtitle)}"></label>
    <label>الشعار (PNG أو JPG)<input type="file" name="logo" accept="image/*"></label>
-   <label>صورة خلفية الواجهة<input type="file" name="hero" accept="image/*"></label>
+   <label>صورة خلفية الواجهة (للحاسوب، عريضة 1600×320)<input type="file" name="hero" accept="image/*"></label>
+   <label>صورة الواجهة للهاتف (اختياري، 1600×560)<input type="file" name="heroM" accept="image/*"><span class="hint">تظهر شريطاً أعلى الترويسة على الهاتف. إن تركتها فارغة تُستعمل صورة الحاسوب.</span></label>
    <label>اللون الافتراضي للجميع<select name="palette">${PALETTES.map((p,i)=>`<option value="${i}" ${(s.palette||0)===i?'selected':''}>اللون ${i+1}</option>`).join('')}</select></label>
    <label>السمة الافتراضية<select name="theme"><option value="light">نهاري</option><option value="dark" ${s.theme==='dark'?'selected':''}>ليلي</option></select></label>
    <div class="full tools"><span class="muted">الشعار الحالي:</span><span style="width:54px;height:54px;display:inline-grid">${logoHTML()}</span>${s.logo?'<button type="button" class="btn sm" data-act="rmLogo">إزالة الشعار</button>':''}${s.hero?'<button type="button" class="btn sm" data-act="rmHero">إزالة الخلفية</button>':''}</div>
@@ -840,7 +841,7 @@ const ACT={
   resetAtt:el=>confirmBox('حذف محاولة الطالب والسماح له بإعادة الاختبار؟',async()=>{try{await API.resetAttempt(el.dataset.id);S.attempts=S.attempts.filter(a=>a.id!==el.dataset.id);render();toast('يمكن للطالب إعادة الاختبار الآن')}catch(e){toast(errMsg(e),'err')}},'إعادة'),
   startExam:el=>startExamPrompt(el.dataset.id),
   myResult:async el=>{try{showResult(await API.examResult(el.dataset.id))}catch(e){toast(errMsg(e),'err')}},
-  rmLogo:()=>mutate(S=>S.settings.logo=''),rmHero:()=>mutate(S=>S.settings.hero=''),
+  rmLogo:()=>mutate(S=>S.settings.logo=''),rmHero:()=>mutate(S=>{S.settings.hero='';S.settings.heroM=''}),
   clearDemo:()=>confirmBox('مسح كل الطلاب والوظائف والجلسات والاستبيانات التجريبية؟ (الإعدادات والمراحل تبقى)',async()=>{const du=S.users.filter(u=>u.demo);
     await mutate(S=>{const ds=new Set(S.students.filter(s=>s.demo).map(s=>s.id)),dt=new Set(S.tasks.filter(t=>t.demo).map(t=>t.id)),dv=new Set(S.surveys.filter(v=>v.demo).map(v=>v.id));S.students=S.students.filter(s=>!s.demo);if(API.mode==='demo')S.users=S.users.filter(u=>!u.demo);S.tasks=S.tasks.filter(t=>!t.demo);S.subs=S.subs.filter(x=>!x.demo&&!ds.has(x.sid)&&!dt.has(x.taskId));S.sessions=S.sessions.filter(x=>!x.demo);S.notes=S.notes.filter(n=>!ds.has(n.sid));S.surveys=S.surveys.filter(v=>!v.demo);const de=new Set(S.exams.filter(e=>e.demo).map(e=>e.id));S.exams=S.exams.filter(e=>!e.demo);S.materials=S.materials.filter(m=>!m.demo);S.notifications=S.notifications.filter(n=>!n.demo);if(API.mode==='demo'){S.attempts=S.attempts.filter(a=>!de.has(a.examId));S.creds=S.creds.filter(c=>!ds.has(c.sid));S.responses=S.responses.filter(r=>!dv.has(r.surveyId));S.participation=S.participation.filter(p=>!dv.has(p.surveyId));S.activity=[]}log('مُسحت البيانات التجريبية، المنصة جاهزة للعمل')});if(API.mode==='supabase')await reload()},'مسح'),
   loadDemo:()=>mutate(S=>seedDemo(S,API.mode==='demo')),
@@ -1008,7 +1009,7 @@ async function credCanvas(s){const c=credOf(s.id),u=S.users.find(x=>x.studentId=
   const rr=(a,b,w,h,r)=>{x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()};
   x.fillStyle='#f7eee7';x.fillRect(0,0,W,H);x.fillStyle='#fff9f3';rr(50,50,W-100,H-100,34);x.fill();x.strokeStyle='#e6d6c4';x.lineWidth=3;x.stroke();
   x.save();rr(50,50,W-100,230,34);x.clip();x.fillStyle='#214539';x.fillRect(50,50,W-100,230);x.restore();x.fillStyle='#214539';x.fillRect(50,200,W-100,80);x.fillStyle='#ba925f';x.fillRect(50,280,W-100,8);
-  x.direction='rtl';x.textAlign='center';x.textBaseline='middle';x.fillStyle='#f4e3bf';x.font='400 64px Rakkas, Tajawal';x.fillText(S.settings.name,W/2,135,W-180);x.fillStyle='#d9bc8c';x.font='500 30px Tajawal';x.fillText('بطاقة دخول الطالب',W/2,220,W-180);
+  x.direction='rtl';x.textAlign='center';x.textBaseline='middle';x.fillStyle='#f4e3bf';x.font='400 56px Rakkas, Tajawal';x.fillText(S.settings.name,W/2,135,W-160);x.fillStyle='#d9bc8c';x.font='500 30px Tajawal';x.fillText('بطاقة دخول الطالب',W/2,220,W-180);
   x.fillStyle='#214539';x.font='800 54px Tajawal';x.fillText(s.name,W/2,370,W-160);x.fillStyle='#a0763f';x.font='500 34px Tajawal';x.fillText('الاختصاص: '+(s.spec||'—'),W/2,440,W-160);
   const rows=[['اسم المستخدم',c?c.username:u?u.username:'—'],['كلمة السر',c?c.password:'—'],['الرقم الامتحاني',s.examNo||'—']];
   rows.forEach(([l,v],i)=>{const y=520+i*150;x.fillStyle='#f7eee7';rr(110,y,W-220,120,22);x.fill();x.strokeStyle='#e6d6c4';x.lineWidth=2;x.stroke();
@@ -1097,8 +1098,8 @@ document.addEventListener('input',e=>{const el=e.target;
   if(el.id==='sq'){UI.sf={...(UI.sf||{t:''}),q:el.value};const pos=el.selectionStart;render();const n=$('#sq');n.focus();n.setSelectionRange(pos,pos)}
   if(el.id==='gsearch')gsearch(el.value)});
 document.addEventListener('submit',async e=>{const f=e.target;
-  if(f.id==='setId'){e.preventDefault();const fd=new FormData(f),lf=fd.get('logo'),hf=fd.get('hero');const logo=lf&&lf.size?await readImage(lf,320):null,hero=hf&&hf.size?await readImage(hf,1600,.82,true):null;
-    mutate(S=>{S.settings.name=fd.get('name');S.settings.subtitle=fd.get('subtitle');S.settings.palette=+fd.get('palette');S.settings.theme=fd.get('theme');if(logo)S.settings.logo=logo;if(hero)S.settings.hero=hero});delete PREFS.palette;delete PREFS.theme;savePrefs();toast('تم الحفظ')}
+  if(f.id==='setId'){e.preventDefault();const fd=new FormData(f),lf=fd.get('logo'),hf=fd.get('hero'),mf=fd.get('heroM');const logo=lf&&lf.size?await readImage(lf,320):null,hero=hf&&hf.size?await readImage(hf,1600,.82,true):null,heroM=mf&&mf.size?await readImage(mf,1200,.82,true):null;
+    mutate(S=>{S.settings.name=fd.get('name');S.settings.subtitle=fd.get('subtitle');S.settings.palette=+fd.get('palette');S.settings.theme=fd.get('theme');if(logo)S.settings.logo=logo;if(hero)S.settings.hero=hero;if(heroM)S.settings.heroM=heroM});delete PREFS.palette;delete PREFS.theme;savePrefs();toast('تم الحفظ')}
   if(f.id==='setProg'){e.preventDefault();const fd=new FormData(f);{let sp=fd.get('spec');if(sp==='__other')sp=String(fd.get('specOther')||'').trim()||specName();const old=specName();mutate(S=>{S.settings.startDate=fd.get('startDate');S.settings.spec=sp;if(sp!==old)S.stages.forEach(g=>{if(!S.materials.some(m=>String(m.stage)===g.id&&m.kind==='session'))g.sections=defSections(sp)})})}toast('تم الحفظ')}});
 function gsearch(q){const box=$('#sres');q=q.trim();if(!q){box.classList.remove('open');return}const R=[];
   S.students.forEach(s=>s.name.includes(q)&&R.push([`#student:${s.id}`,'user',s.name,'طالب']));
