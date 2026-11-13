@@ -397,3 +397,10 @@ body:not(.mobile) .hero.hasimg .bgimg{background-size:100% auto;background-posit
 .hero.hasimg{padding:0 16px 22px!important;background:var(--card)!important;border:1px solid var(--line);min-height:0!important}
 .hero.hasimg .bgimg,.hero.hasimg .veil{display:none!important}
 .hero.hasimg .hstrip{display:block!important;align-self:stretch;width:calc(100% + 32px)!important;max-width:none!important;height:auto!important;margin:0 -16px 14px!important;position:relative}
+
+/* v7: سهم العودة إلى واجهة الاختصاصات */
+.backp{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:13.5px;color:var(--gold3);border:1.5px solid rgba(217,188,140,.55);border-radius:10px;padding:3px 12px;margin-bottom:10px}
+.backp:hover{background:rgba(217,188,140,.16)}
+.backp.top{color:var(--goldink);border-color:var(--gold);align-self:flex-start}
+.login .box{position:relative}.login .backp.top{position:absolute;top:14px;inset-inline-start:14px;margin:0}
+@media print{.backp{display:none}}

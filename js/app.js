@@ -56,6 +56,9 @@ book:'<path d="M12 6c-2-1.6-5-2-8-1.5v13c3-.5 6-.1 8 1.5 2-1.6 5-2 8-1.5v-13c-3-
 geo:'<path d="M4 19h16L7 5z"/><circle cx="15.5" cy="9" r="3.2"/>',alg:'<path d="M5 6l5 6-5 6"/><path d="M13 8h6M13 16h6M16 5v6"/>',comb:'<circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="7" r="2.5"/><circle cx="7" cy="17" r="2.5"/><circle cx="17" cy="17" r="2.5"/><path d="M9.5 7h5M7 9.5v5M9 9l6 6"/>',nt:'<path d="M9 4L7 20M17 4l-2 16M4 9h17M3 15h17"/>',eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'};
 const ic=(n,cls='')=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]||''}</svg>`;
 const DEFAULT_LOGO=`<svg viewBox="0 0 100 100"><defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9b46a"/><stop offset="1" stop-color="#a87a2e"/></linearGradient></defs><g fill="none" stroke="url(#lgG)" stroke-width="5" stroke-linecap="round"><path d="M50 8v10M50 82v10M8 50h10M82 50h10M20 20l7 7M73 73l7 7M80 20l-7 7M27 73l-7 7"/><circle cx="50" cy="50" r="28"/></g><path d="M50 30l6 14 15 1-11 10 4 15-14-8-14 8 4-15-11-10 15-1z" fill="url(#lgG)"/></svg>`;
+// رابط الواجهة الرئيسية الجامعة للاختصاصات: من الإعدادات، وإلا المستودع المجاور olympiad
+const portalUrl=()=>(S&&S.settings&&S.settings.portal)||'../olympiad/';
+const backPortal=cls=>`<a class="backp ${cls||''}" href="${esc(portalUrl())}" title="العودة إلى واجهة الاختصاصات">→ كل الاختصاصات</a>`;
 const logoHTML=()=>`<img src="${S.settings.logo||'icons/logo.png'}" alt="" onerror="this.style.visibility='hidden'">`;
 const PALETTES=[['#214539','#2d5c4b'],['#123f3e','#1b6b67'],['#16324f','#2563a8'],['#33264f','#6b4bb0'],['#4a2338','#a8436e'],['#333d1f','#6b7f2e'],['#4a3517','#a87a2e'],['#2b3035','#55606b']];
 const TASK_TYPES=['وظيفة مسائل','ورقة عمل','بحث','تقرير','مراجعة','أخرى'];
@@ -239,7 +242,7 @@ function render(){if(S){S.tracks=S.tracks||[];S.history=S.history||[]}
   const st=myStudent(),pi=PREFS.palette??S.settings.palette??0,th=PREFS.theme||S.settings.theme;
   const onNav=r=>base===r||(base==='student'&&r==='students')||(base==='survey'&&r==='surveys')||((base==='exam'||base==='exams')&&r==='lectures');const unr=unreadCount();
   $('#root').innerHTML=`<button class="btn mtoggle noprint" data-act="menu" aria-label="القائمة">${ic('menu')}</button><div class="app"><aside class="side" id="side">
-    <div class="brand"><div class="lg">${logoHTML()}</div><b>${esc(S.settings.name)}</b></div>
+    ${backPortal()}<div class="brand"><div class="lg">${logoHTML()}</div><b>${esc(S.settings.name)}</b></div>
     <div class="cap">مساحة العمل</div><nav class="nav">${navItems().map(([r,i,l,cnt])=>`<a href="#${r}" class="${onNav(r)?'on':''}">${ic(i)}<span>${l}</span>${cnt?`<span class="cnt">${cnt}</span>`:''}</a>`).join('')}</nav>
     <div class="bottom">
       <div class="sbox"><div class="t">لون الواجهة</div><div class="dots">${PALETTES.map((p,i)=>`<button style="background:${p[1]}" class="${pi===i?'on':''}" data-act="palette" data-i="${i}" title="لون ${i+1}"></button>`).join('')}</div></div>
@@ -259,7 +262,7 @@ function hero(title,sub,chips,search=true){
   ${chips?`<div class="chips">${chips}</div>`:''}</section>`}
 
 /* ================= views ================= */
-function vLogin(){return `<div class="login"><div class="box"><div class="lg">${logoHTML()}</div><h1>${esc(S.settings.name)}</h1><div class="muted">${esc(subT())}</div>
+function vLogin(){return `<div class="login"><div class="box">${backPortal('top')}<div class="lg">${logoHTML()}</div><h1>${esc(S.settings.name)}</h1><div class="muted">${esc(subT())}</div>
   <form id="loginF"><input name="u" placeholder="اسم المستخدم" autocomplete="username" required dir="ltr" autocapitalize="none"><input name="p" type="password" placeholder="كلمة المرور" autocomplete="current-password" required dir="ltr"><div class="err" id="lerr"></div><button class="btn pri" style="justify-content:center;padding:10px">دخول</button></form>
   <div class="credit dark">تطوير وإشراف: <b>${DEV_NAME}</b></div>
   ${DEMO?`<p class="muted" style="margin-top:14px;font-size:13px">الوضع التجريبي — المطور: <b dir="ltr">dev</b> / <b dir="ltr">dev12345</b> · المشرف: <b dir="ltr">admin</b> / <b dir="ltr">admin123</b><br>الطلاب: <b dir="ltr">student1</b> … <b dir="ltr">student12</b> — كلمة المرور <b dir="ltr">123456</b> — الأرقام الامتحانية 1001 … 1012</p>`:''}</div></div>`}
@@ -536,6 +539,7 @@ VIEWS.settings=()=>{if(!isDev())return '';const s=S.settings;const demoData=S.st
   <section class="panel"><h3>التدريب</h3><form id="setProg" class="fgrid">
    <label class="full">اختصاص هذه المنصة<select name="spec">${[...new Set([...SPECS,s.spec||SPECS[0]])].map(x=>`<option ${x===(s.spec||SPECS[0])?'selected':''}>${esc(x)}</option>`).join('')}<option value="__other">اختصاص آخر (اكتبه في الحقل التالي)…</option></select></label>
    <label class="full">اسم اختصاص آخر (اختياري)<input name="specOther" placeholder="يُستعمل فقط إن اخترت «اختصاص آخر»"><span class="hint">الاختصاص يظهر في الترويسة والبطاقات، ويكون الافتراضي للطلاب الجدد. الرياضيات تبدأ مراحلها بالمحاور الأربعة، وبقية الاختصاصات تبدأ بمحاضرات دون محاور، وتضيف ما تشاء من داخل كل مرحلة.</span></label>
+   <label class="full">رابط الواجهة الرئيسية (كل الاختصاصات)<input name="portal" dir="ltr" value="${esc(s.portal||'')}" placeholder="../olympiad/"><span class="hint">يفتحه سهم «كل الاختصاصات». اتركه فارغاً إن كان مستودع الواجهة اسمه olympiad في الحساب نفسه.</span></label>
    <label class="full">تاريخ بدء التدريب<input type="date" name="startDate" value="${esc(s.startDate)}" required><span class="hint">تُحسب منه فترات التقارير الربعية والنصفية والسنوية.</span></label>
    <div class="full note">المطوّر والمشرف العام: <b>${DEV_NAME}</b></div>
    <div class="factions"><button class="btn pri">حفظ</button></div></form></section></div>
@@ -1100,7 +1104,7 @@ document.addEventListener('input',e=>{const el=e.target;
 document.addEventListener('submit',async e=>{const f=e.target;
   if(f.id==='setId'){e.preventDefault();const fd=new FormData(f),lf=fd.get('logo'),hf=fd.get('hero'),mf=fd.get('heroM');const logo=lf&&lf.size?await readImage(lf,320):null,hero=hf&&hf.size?await readImage(hf,1600,.82,true):null,heroM=mf&&mf.size?await readImage(mf,1200,.82,true):null;
     mutate(S=>{S.settings.name=fd.get('name');S.settings.subtitle=fd.get('subtitle');S.settings.palette=+fd.get('palette');S.settings.theme=fd.get('theme');if(logo)S.settings.logo=logo;if(hero)S.settings.hero=hero;if(heroM)S.settings.heroM=heroM});delete PREFS.palette;delete PREFS.theme;savePrefs();toast('تم الحفظ')}
-  if(f.id==='setProg'){e.preventDefault();const fd=new FormData(f);{let sp=fd.get('spec');if(sp==='__other')sp=String(fd.get('specOther')||'').trim()||specName();const old=specName();mutate(S=>{S.settings.startDate=fd.get('startDate');S.settings.spec=sp;if(sp!==old)S.stages.forEach(g=>{if(!S.materials.some(m=>String(m.stage)===g.id&&m.kind==='session'))g.sections=defSections(sp)})})}toast('تم الحفظ')}});
+  if(f.id==='setProg'){e.preventDefault();const fd=new FormData(f);{let sp=fd.get('spec');if(sp==='__other')sp=String(fd.get('specOther')||'').trim()||specName();const old=specName();mutate(S=>{S.settings.startDate=fd.get('startDate');S.settings.portal=String(fd.get('portal')||'').trim();S.settings.spec=sp;if(sp!==old)S.stages.forEach(g=>{if(!S.materials.some(m=>String(m.stage)===g.id&&m.kind==='session'))g.sections=defSections(sp)})})}toast('تم الحفظ')}});
 function gsearch(q){const box=$('#sres');q=q.trim();if(!q){box.classList.remove('open');return}const R=[];
   S.students.forEach(s=>s.name.includes(q)&&R.push([`#student:${s.id}`,'user',s.name,'طالب']));
   S.materials.forEach(m=>m.title.includes(q)&&canStage(m.stage)&&R.push([`#lectures:${m.stage}:${m.kind==='past'?'past':secOf(m.stage,m.axis)?'axis:'+m.axis:'axes'}`,'book',m.title,m.kind==='past'?'أسئلة دورات':'محاضرة'+(secOf(m.stage,m.axis)?' · '+secOf(m.stage,m.axis).name:'')]));
