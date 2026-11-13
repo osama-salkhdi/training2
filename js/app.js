@@ -56,7 +56,7 @@ book:'<path d="M12 6c-2-1.6-5-2-8-1.5v13c3-.5 6-.1 8 1.5 2-1.6 5-2 8-1.5v-13c-3-
 geo:'<path d="M4 19h16L7 5z"/><circle cx="15.5" cy="9" r="3.2"/>',alg:'<path d="M5 6l5 6-5 6"/><path d="M13 8h6M13 16h6M16 5v6"/>',comb:'<circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="7" r="2.5"/><circle cx="7" cy="17" r="2.5"/><circle cx="17" cy="17" r="2.5"/><path d="M9.5 7h5M7 9.5v5M9 9l6 6"/>',nt:'<path d="M9 4L7 20M17 4l-2 16M4 9h17M3 15h17"/>',eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'};
 const ic=(n,cls='')=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]||''}</svg>`;
 const DEFAULT_LOGO=`<svg viewBox="0 0 100 100"><defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d9b46a"/><stop offset="1" stop-color="#a87a2e"/></linearGradient></defs><g fill="none" stroke="url(#lgG)" stroke-width="5" stroke-linecap="round"><path d="M50 8v10M50 82v10M8 50h10M82 50h10M20 20l7 7M73 73l7 7M80 20l-7 7M27 73l-7 7"/><circle cx="50" cy="50" r="28"/></g><path d="M50 30l6 14 15 1-11 10 4 15-14-8-14 8 4-15-11-10 15-1z" fill="url(#lgG)"/></svg>`;
-const logoHTML=()=>`<img src="${S.settings.logo||'icons/logo.png'}" alt="">`;
+const logoHTML=()=>`<img src="${S.settings.logo||'icons/logo.png'}" alt="" onerror="this.style.visibility='hidden'">`;
 const PALETTES=[['#214539','#2d5c4b'],['#123f3e','#1b6b67'],['#16324f','#2563a8'],['#33264f','#6b4bb0'],['#4a2338','#a8436e'],['#333d1f','#6b7f2e'],['#4a3517','#a87a2e'],['#2b3035','#55606b']];
 const TASK_TYPES=['وظيفة مسائل','ورقة عمل','بحث','تقرير','مراجعة','أخرى'];
 const DEV_NAME='المهندس أسامة ياسر الصلخدي';
@@ -976,7 +976,7 @@ const COLS={name:/اسم|الطالب|name/i,spec:/اختصاص|ماد[ةه]|spe
 function mapStudentRows(rows){let hi=-1,map={};
   for(let i=0;i<Math.min(6,rows.length);i++){const m={};rows[i].forEach((c,j)=>{for(const k in COLS)if(m[k]==null&&COLS[k].test(c)&&c.length<30&&!(k==='name'&&COLS.username.test(c)))m[k]=j});if(m.name!=null){hi=i;map=m;break}}
   if(hi<0){const nc=Math.max(...rows.map(r=>r.length));let best=0,bs=-1;for(let j=0;j<nc;j++){const sc=rows.filter(r=>/^[؀-ۿ\s.]{5,}$/.test(r[j]||'')&&(r[j]||'').trim().split(/\s+/).length>=2).length;if(sc>bs){bs=sc;best=j}}map={name:best}}
-  const out=[];rows.slice(hi+1).forEach(r=>{const o={};for(const k in map)o[k]=String(r[map[k]]??'').trim();if(o.name&&/[؀-ۿa-zA-Z]{2}/.test(o.name)&&!COLS.name.test(o.name))out.push(o)});return{list:out,map,header:hi>=0}}
+  const out=[];rows.slice(hi+1).forEach(r=>{const o={};for(const k in map)o[k]=String(r[map[k]]??'').trim();if(o.name&&/[؀-ۿa-zA-Z]{2}/.test(o.name)&&!/^(الاسم|اسم الطالب|الاسم الكامل|الاسم الثلاثي|اسم|name)$/i.test(o.name.trim()))out.push(o)});return{list:out,map,header:hi>=0}}
 async function importStudents(file){let parsed;try{toast('جارٍ قراءة الملف…');parsed=mapStudentRows(await readTable(file))}catch(e){toast(errMsg(e),'err');return}
   const ex=new Set(S.students.map(s=>normAr(s.name).replace(/\s+/g,' ').trim()));const seen=new Set();
   const list=parsed.list.filter(o=>{const k=normAr(o.name).replace(/\s+/g,' ').trim();if(ex.has(k)||seen.has(k))return false;seen.add(k);return true});const dup=parsed.list.length-list.length;
