@@ -956,7 +956,10 @@ async function openMaterial(id){const m=S.materials.find(x=>x.id===id);if(!m)ret
     if(m.format==='pdf'){box.innerHTML='<div class="pdfpages" id="pdfpages"></div>';const pdfjs=await loadPdfjs();const pdf=await pdfjs.getDocument({data:new Uint8Array(await blob.arrayBuffer())}).promise;const host=$('#pdfpages',el);
       const W=Math.min(host.clientWidth||900,1000),dpr=Math.min(2,window.devicePixelRatio||1);
       for(let i=1;i<=pdf.numPages;i++){if(!me.alive)return;const pg=await pdf.getPage(i),v0=pg.getViewport({scale:1}),vp=pg.getViewport({scale:W/v0.width*dpr});const c=document.createElement('canvas');c.width=Math.round(vp.width);c.height=Math.round(vp.height);c.style.width='100%';host.appendChild(c);await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise}}
-    else{const html=new Blob([await blob.arrayBuffer(),MAT_FIX],{type:'text/html;charset=utf-8'});me.url=URL.createObjectURL(html);box.innerHTML=`<iframe class="mvf" sandbox="allow-scripts ${isStaff()?'allow-downloads allow-popups ':''}allow-modals allow-forms" referrerpolicy="no-referrer" src="${me.url}" title="${esc(m.title)}"></iframe>`}}
+    else{const f=document.createElement('iframe');f.className='mvf';f.setAttribute('sandbox','allow-scripts '+(isStaff()?'allow-downloads allow-popups ':'')+'allow-modals allow-forms');f.setAttribute('referrerpolicy','no-referrer');f.title=m.title;
+      if('srcdoc' in f){const txt=blob.text?await blob.text():await new Response(blob).text();if(!me.alive)return;f.srcdoc=txt+MAT_FIX}
+      else{const html=new Blob([await blob.arrayBuffer(),MAT_FIX],{type:'text/html;charset=utf-8'});me.url=URL.createObjectURL(html);f.src=me.url}
+      box.innerHTML='';box.appendChild(f)}}
   catch(e){if(me.alive)$('#mvb',el).innerHTML=`<div class="panel" style="margin:20px">${esc(errMsg(e))}</div>`}}
 function closeMat(silent){const el=$('#matView');if(el)el.remove();document.body.classList.remove('noscroll');if(MAT){MAT.alive=false;if(MAT.url)URL.revokeObjectURL(MAT.url)}MAT=null}
 window.__closeMat=closeMat;
