@@ -939,6 +939,8 @@ async function pdfToHtml(file,title,onStep){const pdfjs=await loadPdfjs();const 
   return new Blob([html],{type:'text/html'})}
 // عارض الملفات: HTML داخل إطار معزول، وPDF يُرسم صفحةً صفحة
 let MAT=null;
+// داخل الإطار المعزول لا تعمل روابط التنقل الداخلية (#قسم) من تلقاء نفسها، فنضيف للملف سكربتاً صغيراً يمرّر إلى القسم المطلوب
+const MAT_FIX=`\n<script>(function(){document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href]'):null;if(!a)return;var h=a.getAttribute('href')||'';if(h.charAt(0)!=='#')return;e.preventDefault();if(h.length<2){window.scrollTo({top:0,behavior:'smooth'});return}var id=decodeURIComponent(h.slice(1)),t=document.getElementById(id)||document.getElementsByName(id)[0];if(t)t.scrollIntoView({behavior:'smooth',block:'start'})},true)})()<\/script>`;
 // حفظ الملف في متصفح الطالب بعد أول فتح: لا يُنزَّل من جديد إلا إذا استُبدل (مسار الملف يتغيّر عند كل رفع)
 const MATC='olymp-mat-v1',matKey=p=>'/__mat/'+encodeURIComponent(p);
 async function matBlob(m){let c=null;try{c=await caches.open(MATC);const r=await c.match(matKey(m.path));if(r)return await r.blob()}catch(e){c=null}
@@ -954,7 +956,7 @@ async function openMaterial(id){const m=S.materials.find(x=>x.id===id);if(!m)ret
     if(m.format==='pdf'){box.innerHTML='<div class="pdfpages" id="pdfpages"></div>';const pdfjs=await loadPdfjs();const pdf=await pdfjs.getDocument({data:new Uint8Array(await blob.arrayBuffer())}).promise;const host=$('#pdfpages',el);
       const W=Math.min(host.clientWidth||900,1000),dpr=Math.min(2,window.devicePixelRatio||1);
       for(let i=1;i<=pdf.numPages;i++){if(!me.alive)return;const pg=await pdf.getPage(i),v0=pg.getViewport({scale:1}),vp=pg.getViewport({scale:W/v0.width*dpr});const c=document.createElement('canvas');c.width=Math.round(vp.width);c.height=Math.round(vp.height);c.style.width='100%';host.appendChild(c);await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise}}
-    else{const html=new Blob([await blob.arrayBuffer()],{type:'text/html;charset=utf-8'});me.url=URL.createObjectURL(html);box.innerHTML=`<iframe class="mvf" sandbox="allow-scripts ${isStaff()?'allow-downloads allow-popups ':''}allow-modals allow-forms" referrerpolicy="no-referrer" src="${me.url}" title="${esc(m.title)}"></iframe>`}}
+    else{const html=new Blob([await blob.arrayBuffer(),MAT_FIX],{type:'text/html;charset=utf-8'});me.url=URL.createObjectURL(html);box.innerHTML=`<iframe class="mvf" sandbox="allow-scripts ${isStaff()?'allow-downloads allow-popups ':''}allow-modals allow-forms" referrerpolicy="no-referrer" src="${me.url}" title="${esc(m.title)}"></iframe>`}}
   catch(e){if(me.alive)$('#mvb',el).innerHTML=`<div class="panel" style="margin:20px">${esc(errMsg(e))}</div>`}}
 function closeMat(silent){const el=$('#matView');if(el)el.remove();document.body.classList.remove('noscroll');if(MAT){MAT.alive=false;if(MAT.url)URL.revokeObjectURL(MAT.url)}MAT=null}
 window.__closeMat=closeMat;
